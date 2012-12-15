@@ -33,6 +33,9 @@ const char GAME_TITLE[] = "Space Tanks";
 const bool FULLSCREEN = false;              // windowed or fullscreen
 const UINT GAME_WIDTH =  1024;               // width of game in pixels
 const UINT GAME_HEIGHT = 768;               // height of game in pixels
+const float GRID_SIZE = 36.0;
+const int MAX_ROWS = GAME_HEIGHT/(int)GRID_SIZE;
+const int MAX_COLS = GAME_WIDTH/(int)GRID_SIZE;
  
 // game
 const double PI = 3.14159265;
@@ -59,5 +62,8 @@ const UCHAR CONSOLE_KEY  = VK_OEM_3;    // `~ key for U.S.
 const UCHAR ESC_KEY      = VK_ESCAPE;   // escape key
 const UCHAR ALT_KEY      = VK_MENU;     // Alt key
 const UCHAR ENTER_KEY    = VK_RETURN;   // Enter key
+
+// wall
+const enum ROWCOL {ROW, COL};
 
 #endif

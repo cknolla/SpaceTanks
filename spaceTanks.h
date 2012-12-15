@@ -12,6 +12,9 @@
 #include "textureManager.h"
 #include "image.h"
 #include "textDX.h"
+#include "tank.h"
+#include "map.h"
+#include "wall.h"
 
 #pragma comment(lib,"winmm.lib")
 #pragma comment(lib,"d3dx9.lib")
@@ -25,8 +28,9 @@ class SpaceTanks : public Game
 {
 private:
     // game items
-    TextureManager menuTexture; // textures
-    Image   menu;               // menu image
+    TextureManager tankTexture; // textures
+	Map currentMap;
+    Tank playerTank;               // menu image
     TextDX  *dxFont;            // DirectX font
     std::string  message;
     float messageY;

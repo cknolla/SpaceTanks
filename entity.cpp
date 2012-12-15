@@ -22,7 +22,7 @@ Entity::Entity() : Image()
     deltaV.y = 0.0;
     active = true;                  // the entity is active
     rotatedBoxReady = false;
-    collisionType = entityNS::CIRCLE;
+    collisionType = entityNS::BOX;
     health = 100;
     gravity = entityNS::GRAVITY;
 }
@@ -39,9 +39,15 @@ Entity::Entity() : Image()
 bool Entity::initialize(Game *gamePtr, int width, int height, int ncols,
                             TextureManager *textureM)
 {
+	bool result;
     input = gamePtr->getInput();                // the input system
     audio = gamePtr->getAudio();                // the audio system
-    return(Image::initialize(gamePtr->getGraphics(), width, height, ncols, textureM));
+    result = Image::initialize(gamePtr->getGraphics(), width, height, ncols, textureM);
+	edge.left = -spriteData.width/2 + 1;
+    edge.top = -spriteData.height/2 + 1;
+    edge.right = spriteData.width/2 - 1;
+    edge.bottom = spriteData.height/2 - 1;
+	return result;
 }
 
 //=============================================================================

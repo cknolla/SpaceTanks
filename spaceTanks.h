@@ -29,7 +29,7 @@ class SpaceTanks : public Game
 private:
     // game items
     TextureManager tankTexture; // textures
-	Map currentMap;
+	Map* currentMap;
     Tank playerTank;               // menu image
     TextDX  *dxFont;            // DirectX font
     std::string  message;

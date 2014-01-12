@@ -21,6 +21,9 @@ public:
 
 	Wall* getFirstWall() { return firstWall; }
 
+	void setSize(int newSize) { size = newSize; }
+	int getSize() { return size; }
+
 	void onLostDevice();
 	void onResetDevice();
 

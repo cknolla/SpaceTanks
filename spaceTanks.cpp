@@ -31,8 +31,9 @@ SpaceTanks::~SpaceTanks()
 void SpaceTanks::initialize(HWND hwnd)
 {
     Game::initialize(hwnd); // throws GameError
+	currentMap = new Map;
 
-	currentMap.initialize(this);
+	currentMap->initialize(this);
 
     // textures
     if (!tankTexture.initialize(graphics,"pictures\\testSet000.png"))
@@ -77,6 +78,11 @@ void SpaceTanks::update()
 		playerTank.moveUp();
 	} else if(input->wasKeyPressed('S')) {
 		playerTank.moveDown();
+	} else if (input->wasKeyPressed('1')) {
+		delete currentMap;
+		currentMap = new Map;
+		currentMap->setSize(100);
+		currentMap->initialize(this);
 	} else
 		playerTank.setMoved('n');
 	/*
@@ -113,7 +119,7 @@ void SpaceTanks::ai()
 void SpaceTanks::collisions()
 {
 	VECTOR2 collisionVector;
-	Wall* curWall = currentMap.getFirstWall();
+	Wall* curWall = currentMap->getFirstWall();
 	float shiftAmount = 8.0f;
 
 	if(playerTank.getMoved() == 'l') {
@@ -171,7 +177,7 @@ void SpaceTanks::collisions()
 //=============================================================================
 void SpaceTanks::render()
 {
-	Wall* curWall = currentMap.getFirstWall();
+	Wall* curWall = currentMap->getFirstWall();
     graphics->spriteBegin();                // begin drawing sprites
 	
     playerTank.draw();
@@ -193,7 +199,7 @@ void SpaceTanks::releaseAll()
 {
     dxFont->onLostDevice();
     tankTexture.onLostDevice();
-	currentMap.onLostDevice();
+	currentMap->onLostDevice();
     Game::releaseAll();
     return;
 }
@@ -206,7 +212,7 @@ void SpaceTanks::resetAll()
 {
     tankTexture.onResetDevice();
     dxFont->onResetDevice();
-	currentMap.onResetDevice();
+	currentMap->onResetDevice();
     Game::resetAll();
     return;
 }

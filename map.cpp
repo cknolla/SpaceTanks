@@ -3,7 +3,7 @@
 Map::Map()
 {
 	firstWall = NULL;
-	size = 800;
+	size = 1000;
 }
 
 Map::~Map()

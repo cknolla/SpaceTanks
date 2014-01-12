@@ -21,6 +21,7 @@ SpaceTanks::SpaceTanks()
 SpaceTanks::~SpaceTanks()
 {
     releaseAll();           // call onLostDevice() for every graphics item
+	SAFE_DELETE(currentMap);
     SAFE_DELETE(dxFont);
 }
 

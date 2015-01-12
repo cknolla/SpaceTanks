@@ -1,10 +1,5 @@
 #include "wall.h"
 
-Wall::Wall()
-{
-	nextWall = NULL;
-}
-
 Wall::~Wall()
 {
 }
@@ -15,19 +10,19 @@ bool Wall::initialize(Game* gamePtr, TextureManager* texture)
 	return(Entity::initialize(gamePtr, 0, 0, 0, texture));
 }
 
-void Wall::setCoord(int x, int y, enum ROWCOL rowOrCol)
+void Wall::setCoord(GridVector newGridPos, enum ORIENTATION orientation)
 {
-	if(rowOrCol == COL) {
-		setX((getHeight()-getWidth()) * (float)x);
-		setY((getHeight()-getWidth()) * (float)y);
+	if(orientation == VERTICAL) {
+		setX(((getHeight()-getWidth()) * (float)newGridPos.getX()) - getWidth()/2);
+      setY(((getHeight() - getWidth()) * (float)newGridPos.getY()) - getWidth() / 2);
 		edge.left = -spriteData.width/2 + 1;
 		edge.top = -spriteData.height/2 + 1;
 		edge.right = spriteData.width/2 - 1;
 		edge.bottom = spriteData.height/2 - 1;
 	}
-	if(rowOrCol == ROW) {
-		setX((getHeight()-getWidth()) * (float)x + (getHeight()-getWidth())/2); // wall is rotated around its center, so it is offset
-		setY((getHeight()-getWidth()) * (float)y - (getHeight()-getWidth())/2);
+	if(orientation == HORIZONTAL) {
+      setX((getHeight() - getWidth()) * (float)newGridPos.getX() + (getHeight() - getWidth()) / 2 - getWidth() / 2); // wall is rotated around its center, so it is offset
+      setY((getHeight() - getWidth()) * (float)newGridPos.getY() - (getHeight() - getWidth()) / 2 - getWidth() / 2);
 		setDegrees(90.0f);
 		edge.left = -spriteData.height/2 + 1;
 		edge.top = -spriteData.width/2 + 1;

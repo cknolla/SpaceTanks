@@ -4,6 +4,7 @@
 Tank::Tank()
 {
 	moved = 'n';
+   gridPos.setPos(0, 0, this);
 }
 
 Tank::~Tank()
@@ -13,35 +14,35 @@ Tank::~Tank()
 void Tank::moveLeft()
 {
 	setDegrees(90.0);
-	if(getX()-GRID_SIZE >= 0.0) {
+//	if(gridPos.getX() > 0) {
 		moved = 'l';
-		setX(getX()-GRID_SIZE);
-	} 
+//		gridPos.setPos(gridPos.getX()-1,gridPos.getY(), this);
+//	} 
 }
 
 void Tank::moveRight()
 {
 	setDegrees(270.0);
-	if(getX()+GRID_SIZE <= GAME_WIDTH) {
+//	if(gridPos.getX() < MAX_COLS-1) {
 		moved = 'r';
-		setX(getX()+GRID_SIZE);
-	} 
+//      gridPos.setPos(gridPos.getX() + 1, gridPos.getY(), this);
+//	} 
 }
 
 void Tank::moveUp()
 {
 	setDegrees(180.0);
-	if(getY()-GRID_SIZE >= 0.0) {
+//	if(gridPos.getY() > 0) {
 		moved = 'u';
-		setY(getY()-GRID_SIZE);
-	}
+//      gridPos.setPos(gridPos.getX(), gridPos.getY() - 1, this);
+//	}
 }
 
 void Tank::moveDown()
 {
 	setDegrees(0.0);
-	if(getY()+GRID_SIZE <= GAME_HEIGHT) {
+//	if(gridPos.getY() < MAX_ROWS-1) {
 		moved = 'd';
-		setY(getY()+GRID_SIZE);
-	} 
+//     gridPos.setPos(gridPos.getX(), gridPos.getY() + 1, this);
+//	} 
 }

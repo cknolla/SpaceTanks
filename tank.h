@@ -3,6 +3,7 @@
 #define WIN32_LEAN_AND_MEAN
 
 #include "entity.h"
+#include "gridVector.h"
 
 class Tank;
 
@@ -10,6 +11,7 @@ class Tank : public Entity
 {
 private:
 	char moved;
+   GridVector gridPos;
 public:
 	Tank();
 	~Tank();
@@ -21,6 +23,7 @@ public:
 
 	char getMoved() { return moved; }
 	void setMoved(char newMoved) { moved = newMoved; }
+   GridVector& getGridPos() { return gridPos; }
 };
 
 

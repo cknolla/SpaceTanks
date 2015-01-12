@@ -21,7 +21,7 @@ SpaceTanks::SpaceTanks()
 SpaceTanks::~SpaceTanks()
 {
     releaseAll();           // call onLostDevice() for every graphics item
-	SAFE_DELETE(currentMap);
+	 SAFE_DELETE(currentMap);
     SAFE_DELETE(dxFont);
 }
 
@@ -51,8 +51,8 @@ void SpaceTanks::initialize(HWND hwnd)
     if(dxFont->initialize(graphics, 18, true, false, "Arial") == false)
         throw(GameError(gameErrorNS::FATAL_ERROR, "Error initializing DirectX font"));
 
-	playerTank.setX(4.0f);
-	playerTank.setY(4.0f);
+	playerTank.setX(0.0f);
+	playerTank.setY(0.0f);
 
 
     return;
@@ -65,7 +65,7 @@ void SpaceTanks::update()
 {
 	char str[200];
 	sprintf_s(str, "X = %.3f, Y = %.3f", playerTank.getX(), playerTank.getY());
-	message = str;
+//	message = str;
 	
 	if(input->wasKeyPressed(ESC_KEY)) { // Quit if ESC pressed
 		PostQuitMessage(0);
@@ -119,58 +119,90 @@ void SpaceTanks::ai()
 //=============================================================================
 void SpaceTanks::collisions()
 {
+   int newX = playerTank.getGridPos().getX();
+   int newY = playerTank.getGridPos().getY();
+   int wallX = newX;
+   int wallY = newY;
+   std::vector<Wall*>* walls = &(currentMap->getVerticalWalls());
+   if(playerTank.getMoved() == 'l') {
+      newX -= 1;   
+   } else if(playerTank.getMoved() == 'r') {
+      newX += 1;
+      wallX += 1;
+   } else if(playerTank.getMoved() == 'u') {
+      newY -= 1;
+      walls = &(currentMap->getHorizontalWalls());
+   } else if(playerTank.getMoved() == 'd') {
+      newY += 1;
+      wallY += 1;
+      walls = &(currentMap->getHorizontalWalls());
+   }
+   if(newX >= 0 && newY >= 0 && newX < MAX_COLS+1 && newY < MAX_ROWS+1 && playerTank.getMoved() != 'n') {
+      char str[200];
+      sprintf_s(str, "newX = %d, newY = %d, size = %d", newX, newY, walls->size());
+      message = str;
+      try {
+         if(!walls->at(wallX*(MAX_ROWS+1) + wallY)->getVisible()) {
+            playerTank.getGridPos().setPos(newX, newY, &playerTank);
+         }
+      } catch(std::out_of_range e) {
+         throw(GameError(gameErrorNS::FATAL_ERROR, str));
+      }
+   }
+   /*
 	VECTOR2 collisionVector;
-	Wall* curWall = currentMap->getFirstWall();
+//	Wall* curWall = currentMap->getFirstWall();
 	float shiftAmount = 8.0f;
 
 	if(playerTank.getMoved() == 'l') {
 		playerTank.setX(playerTank.getX()+shiftAmount);
-		while(curWall) {
+		for(auto curWall : currentMap->getWalls()) {
 			if(playerTank.collidesWith((*curWall), collisionVector)) {
 				playerTank.setX(playerTank.getX()+GRID_SIZE);
 				message = "Collision";
 				break; // prevent a chain reaction shifting you all the way left off the screen
 			}
-			curWall = curWall->getNextWall();
+//			curWall = curWall->getNextWall();
 		}
 		playerTank.setX(playerTank.getX()-shiftAmount);
 	}
 	else if(playerTank.getMoved() == 'r') {
 		playerTank.setX(playerTank.getX()-shiftAmount);
-		while(curWall) {
+		for(auto curWall : currentMap->getWalls()) {
 			if(playerTank.collidesWith((*curWall), collisionVector)) {
 				playerTank.setX(playerTank.getX()-GRID_SIZE);
 				message = "Collision";
 				break;
 			}
-			curWall = curWall->getNextWall();
+//			curWall = curWall->getNextWall();
 		}
 		playerTank.setX(playerTank.getX()+shiftAmount);
 	}
 	else if(playerTank.getMoved() == 'u') {
 		playerTank.setY(playerTank.getY()+shiftAmount);
-		while(curWall) {
+      for(auto curWall : currentMap->getWalls()) {
 			if(playerTank.collidesWith((*curWall), collisionVector)) {
 				playerTank.setY(playerTank.getY()+GRID_SIZE);
 				message = "Collision";
 				break;
 			}
-			curWall = curWall->getNextWall();
+//			curWall = curWall->getNextWall();
 		}
 		playerTank.setY(playerTank.getY()-shiftAmount);
 	}
 	else if(playerTank.getMoved() == 'd') {
 		playerTank.setY(playerTank.getY()-shiftAmount);
-		while(curWall) {
+      for(auto curWall : currentMap->getWalls()) {
 			if(playerTank.collidesWith((*curWall), collisionVector)) {
 				playerTank.setY(playerTank.getY()-GRID_SIZE);
 				message = "Collision";
 				break;
 			}
-			curWall = curWall->getNextWall();
+//			curWall = curWall->getNextWall();
 		}
 		playerTank.setY(playerTank.getY()+shiftAmount);
 	}
+   */
 }
 
 //=============================================================================
@@ -178,14 +210,16 @@ void SpaceTanks::collisions()
 //=============================================================================
 void SpaceTanks::render()
 {
-	Wall* curWall = currentMap->getFirstWall();
+//	Wall* curWall = currentMap->getFirstWall();
     graphics->spriteBegin();                // begin drawing sprites
 	
     playerTank.draw();
-	while(curWall) {
+    for(auto curWall : currentMap->getHorizontalWalls()) {
 		curWall->draw();
-		curWall = curWall->getNextWall();
 	}
+    for(auto curWall : currentMap->getVerticalWalls()) {
+       curWall->draw();
+    }
     dxFont->setFontColor(graphicsNS::ORANGE);
     dxFont->print(message,20,(int)messageY);
 	

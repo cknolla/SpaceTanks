@@ -3,26 +3,34 @@
 #define WIN32_LEAN_AND_MEAN
 
 #include "wall.h"
+#include <vector>
 #include <time.h>
 
 class Map;
 
-class Map : public Entity
-{
+class Map : public Entity {
 private:
-	TextureManager wallTexture;
-	Wall* firstWall;
-	int size;
+   TextureManager wallTexture;
+   // walls are stored by x first, then y.
+   std::vector<Wall*> horizontalWalls;
+   // walls are stored by x first, then y.
+   std::vector<Wall*> verticalWalls;
+//   Wall* firstWall;
+   int size;
 public:
-	Map();
-	~Map();
+   Map();
+   ~Map();
 
-	bool initialize(Game* gamePtr);
+   bool initialize(Game* gamePtr);
 
-	Wall* getFirstWall() { return firstWall; }
+//   Wall* getFirstWall() { return firstWall; }
+   std::vector<Wall*>& getHorizontalWalls() { return horizontalWalls; }
+   std::vector<Wall*>& getVerticalWalls() { return verticalWalls; }
 
 	void setSize(int newSize) { size = newSize; }
 	int getSize() { return size; }
+
+   void generatePath(GridVector startingPoint);
 
 	void onLostDevice();
 	void onResetDevice();

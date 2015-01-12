@@ -3,23 +3,20 @@
 #define WIN32_LEAN_AND_MEAN
 
 #include "entity.h"
+#include "gridVector.h"
 
 class Wall;
 
 class Wall : public Entity
 {
-private:
-	Wall* nextWall;
 public:
-	Wall();
+   Wall() {}
 	~Wall();
 
 	bool initialize(Game* gamePtr, TextureManager* texture);
 
-	void setCoord(int x, int y, enum ROWCOL rowOrCol);
-
-	Wall* getNextWall() { return nextWall; }
-	void setNextWall(Wall* nw) { nextWall = nw; }
+   // doesn't sit right on grid lines. Move walls with this function
+	void setCoord(GridVector newGridPos, enum ORIENTATION orientation);
 
 };
 

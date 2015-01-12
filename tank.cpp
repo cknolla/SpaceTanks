@@ -4,7 +4,7 @@
 Tank::Tank()
 {
 	moved = 'n';
-   gridPos.setPos(0, 0, this);
+   gridPos.setPos(MAX_COLS/2, MAX_ROWS/2, this);
 }
 
 Tank::~Tank()

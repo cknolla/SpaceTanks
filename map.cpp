@@ -67,7 +67,7 @@ bool Map::initialize(Game* gamePtr)
          }
       }
    }
-   generatePath(GridVector(0,0));
+   generatePath(GridVector(MAX_COLS/2,MAX_ROWS/2));
    /*
 	curWall = firstWall;
 	for(tempSize = size/2; tempSize > 0; tempSize--) {
@@ -93,12 +93,60 @@ bool Map::initialize(Game* gamePtr)
 
 void Map::generatePath(GridVector startingPoint)
 {
-   int startX = startingPoint.getX();
-   int startY = startingPoint.getY();
+   int curX = startingPoint.getX();
+   int curY = startingPoint.getY();
    srand(time(NULL));
    std::ofstream logfile;
    logfile.open("pathLog.txt");
-   logfile << "Writing this to a file.\n";
+   std::vector<int> history;
+   std::vector<Wall*>* walls = &horizontalWalls;
+
+   history.push_back(0);
+   int direction = rand() % 4; // initial direction 25% any way
+
+   while(curX >= 0 && curY >= 0 && curX < MAX_COLS && curY < MAX_ROWS) {
+      int delayX = curX;
+      int delayY = curY;
+      if(direction == 0) {
+         logfile << "\nup";
+         delayY--;
+         walls = &horizontalWalls;
+      } else if(direction == 1) {
+         logfile << "\nright";
+         curX++;
+         delayX++;
+         walls = &verticalWalls;
+      } else if(direction == 2) {
+         logfile << "\ndown";
+         curY++;
+         delayY++;
+         walls = &horizontalWalls;
+      } else if(direction == 3) {
+         logfile << "\nleft";
+         delayX--;
+         walls = &verticalWalls;
+      }
+
+      walls->at(curX*(MAX_ROWS + 1) + curY)->setVisible(false);
+      curX = delayX;
+      curY = delayY;
+      int nextDirection = rand() % 100;
+      logfile << " " << nextDirection;
+      if(nextDirection < 30) {
+         direction += 1; // 90 degrees right
+      } else if(nextDirection < 60) {
+         direction -= 1; // 90 degrees left
+      } else {
+         // direction stays the same
+      }
+      if(direction < 0) {
+         direction += 4;
+      } else if(direction > 3) {
+         direction -= 4;
+      }
+   }
+
+//   logfile << "Writing this to a file.\n";
    logfile.close();
 }
 

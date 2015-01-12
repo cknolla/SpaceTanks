@@ -51,8 +51,8 @@ void SpaceTanks::initialize(HWND hwnd)
     if(dxFont->initialize(graphics, 18, true, false, "Arial") == false)
         throw(GameError(gameErrorNS::FATAL_ERROR, "Error initializing DirectX font"));
 
-	playerTank.setX(0.0f);
-	playerTank.setY(0.0f);
+//	playerTank.setX(0.0f);
+//	playerTank.setY(0.0f);
 
 
     return;

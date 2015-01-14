@@ -34,6 +34,7 @@ private:
     TextDX  *dxFont;            // DirectX font
     std::string  message;
     float messageY;
+    bool mapComplete;
 
 public:
     // Constructor
@@ -43,11 +44,14 @@ public:
     // Initialize the game
     void initialize(HWND hwnd);
     void update();      // must override pure virtual from Game
+    void newMap();
     void ai();          // "
     void collisions();  // "
     void render();      // "
+    void renderWalls(std::vector<Wall*>* walls);
     void releaseAll();
     void resetAll();
+    void consoleCommand();
 };
 
 #endif

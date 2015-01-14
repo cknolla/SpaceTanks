@@ -4,8 +4,8 @@
 
 Map::Map()
 {
-//	firstWall = NULL;
-	size = 1000;
+   lightMode = true;
+   lightRadius = 3;
 }
 
 Map::~Map()
@@ -127,7 +127,7 @@ void Map::generatePath(GridVector startingPoint)
          walls = &verticalWalls;
       }
 
-      walls->at(curX*(MAX_ROWS + 1) + curY)->setVisible(false);
+      walls->at(GridVector::get1dPos(curX,curY))->setSolid(false);
       curX = delayX;
       curY = delayY;
       int nextDirection = rand() % 100;

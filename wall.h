@@ -9,14 +9,18 @@ class Wall;
 
 class Wall : public Entity
 {
+private:
+   bool solid; // not passable by player
 public:
-   Wall() {}
+   Wall() : solid(true) {}
 	~Wall();
 
 	bool initialize(Game* gamePtr, TextureManager* texture);
 
    // doesn't sit right on grid lines. Move walls with this function
 	void setCoord(GridVector newGridPos, enum ORIENTATION orientation);
+   bool getSolid() { return solid; }
+   void setSolid(bool s) { solid = s; }
 
 };
 

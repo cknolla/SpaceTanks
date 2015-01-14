@@ -15,8 +15,10 @@ private:
    std::vector<Wall*> horizontalWalls;
    // walls are stored by x first, then y.
    std::vector<Wall*> verticalWalls;
-//   Wall* firstWall;
-   int size;
+   // light mode is like carrying a flashlight. If false, the whole map is visible
+   bool lightMode;
+   // number of spaces away from the player where walls are visible
+   int lightRadius;
 public:
    Map();
    ~Map();
@@ -27,10 +29,11 @@ public:
    std::vector<Wall*>& getHorizontalWalls() { return horizontalWalls; }
    std::vector<Wall*>& getVerticalWalls() { return verticalWalls; }
 
-	void setSize(int newSize) { size = newSize; }
-	int getSize() { return size; }
-
    void generatePath(GridVector startingPoint);
+   bool getLightMode() { return lightMode; }
+   void setLightMode(bool lm) { lightMode = lm; }
+   int getLightRadius() { return lightRadius; }
+   void setLightRadius(int lr) { lightRadius = lr; }
 
 	void onLostDevice();
 	void onResetDevice();

@@ -22,6 +22,8 @@ public:
    void setPos(int x, int y, Image* image);
    int getX() { return x; }
    int getY() { return y; }
+   // convert 2d into 1d for std::vector position
+   static int get1dPos(int x, int y);
 
 
    VECTOR2 gridToScreen() { return VECTOR2((float)x*GRID_SIZE, (float)y*GRID_SIZE); }

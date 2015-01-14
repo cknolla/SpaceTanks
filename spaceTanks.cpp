@@ -5,6 +5,7 @@
 // This class is the core of the game
 
 #include "spaceTanks.h"
+#include <sstream>
 
 //=============================================================================
 // Constructor
@@ -32,9 +33,8 @@ SpaceTanks::~SpaceTanks()
 void SpaceTanks::initialize(HWND hwnd)
 {
     Game::initialize(hwnd); // throws GameError
-	currentMap = new Map;
-
-	currentMap->initialize(this);
+    mapComplete = false;
+    newMap();
 
     // textures
     if (!tankTexture.initialize(graphics,"pictures\\testSet000.png"))
@@ -58,11 +58,23 @@ void SpaceTanks::initialize(HWND hwnd)
     return;
 }
 
+void SpaceTanks::newMap()
+{
+   SAFE_DELETE(currentMap);
+   currentMap = new Map;
+   currentMap->initialize(this);
+   playerTank.getGridPos().setPos(MAX_COLS/2, MAX_ROWS/2, &playerTank);
+}
+
 //=============================================================================
 // Update all game items
 //=============================================================================
 void SpaceTanks::update()
 {
+   if(mapComplete) {
+      newMap();
+      mapComplete = false;
+   }
 	char str[200];
 	sprintf_s(str, "X = %.3f, Y = %.3f", playerTank.getX(), playerTank.getY());
 //	message = str;
@@ -80,10 +92,7 @@ void SpaceTanks::update()
 	} else if(input->wasKeyPressed('S')) {
 		playerTank.moveDown();
 	} else if (input->wasKeyPressed('1')) {
-		delete currentMap;
-		currentMap = new Map;
-		currentMap->setSize(100);
-		currentMap->initialize(this);
+      newMap();
 	} else
 		playerTank.setMoved('n');
 	/*
@@ -137,72 +146,24 @@ void SpaceTanks::collisions()
       wallY += 1;
       walls = &(currentMap->getHorizontalWalls());
    }
-   if(newX >= 0 && newY >= 0 && newX < MAX_COLS+1 && newY < MAX_ROWS+1 && playerTank.getMoved() != 'n') {
+//   if(newX >= 0 && newY >= 0 && newX < MAX_COLS+1 && newY < MAX_ROWS+1 && playerTank.getMoved() != 'n') {
+   if(playerTank.getMoved() != 'n') {
       char str[200];
-      sprintf_s(str, "newX = %d, newY = %d, size = %d", newX, newY, walls->size());
+      sprintf_s(str, "newX = %d, newY = %d", newX, newY);
       message = str;
-      try {
-         if(!walls->at(wallX*(MAX_ROWS+1) + wallY)->getVisible()) {
-            playerTank.getGridPos().setPos(newX, newY, &playerTank);
+      if(newX == -1 || newX == MAX_COLS || newY == -1 || newY == MAX_ROWS) {
+         mapComplete = true;
+      } else {
+         try {
+            if(!walls->at(GridVector::get1dPos(wallX, wallY))->getSolid()) {
+               playerTank.getGridPos().setPos(newX, newY, &playerTank);
+            }
+         } catch(std::out_of_range e) {
+            throw(GameError(gameErrorNS::FATAL_ERROR, str));
          }
-      } catch(std::out_of_range e) {
-         throw(GameError(gameErrorNS::FATAL_ERROR, str));
       }
    }
-   /*
-	VECTOR2 collisionVector;
-//	Wall* curWall = currentMap->getFirstWall();
-	float shiftAmount = 8.0f;
 
-	if(playerTank.getMoved() == 'l') {
-		playerTank.setX(playerTank.getX()+shiftAmount);
-		for(auto curWall : currentMap->getWalls()) {
-			if(playerTank.collidesWith((*curWall), collisionVector)) {
-				playerTank.setX(playerTank.getX()+GRID_SIZE);
-				message = "Collision";
-				break; // prevent a chain reaction shifting you all the way left off the screen
-			}
-//			curWall = curWall->getNextWall();
-		}
-		playerTank.setX(playerTank.getX()-shiftAmount);
-	}
-	else if(playerTank.getMoved() == 'r') {
-		playerTank.setX(playerTank.getX()-shiftAmount);
-		for(auto curWall : currentMap->getWalls()) {
-			if(playerTank.collidesWith((*curWall), collisionVector)) {
-				playerTank.setX(playerTank.getX()-GRID_SIZE);
-				message = "Collision";
-				break;
-			}
-//			curWall = curWall->getNextWall();
-		}
-		playerTank.setX(playerTank.getX()+shiftAmount);
-	}
-	else if(playerTank.getMoved() == 'u') {
-		playerTank.setY(playerTank.getY()+shiftAmount);
-      for(auto curWall : currentMap->getWalls()) {
-			if(playerTank.collidesWith((*curWall), collisionVector)) {
-				playerTank.setY(playerTank.getY()+GRID_SIZE);
-				message = "Collision";
-				break;
-			}
-//			curWall = curWall->getNextWall();
-		}
-		playerTank.setY(playerTank.getY()-shiftAmount);
-	}
-	else if(playerTank.getMoved() == 'd') {
-		playerTank.setY(playerTank.getY()-shiftAmount);
-      for(auto curWall : currentMap->getWalls()) {
-			if(playerTank.collidesWith((*curWall), collisionVector)) {
-				playerTank.setY(playerTank.getY()-GRID_SIZE);
-				message = "Collision";
-				break;
-			}
-//			curWall = curWall->getNextWall();
-		}
-		playerTank.setY(playerTank.getY()+shiftAmount);
-	}
-   */
 }
 
 //=============================================================================
@@ -210,20 +171,113 @@ void SpaceTanks::collisions()
 //=============================================================================
 void SpaceTanks::render()
 {
-//	Wall* curWall = currentMap->getFirstWall();
+   
     graphics->spriteBegin();                // begin drawing sprites
 	
     playerTank.draw();
-    for(auto curWall : currentMap->getHorizontalWalls()) {
-		curWall->draw();
-	}
-    for(auto curWall : currentMap->getVerticalWalls()) {
-       curWall->draw();
-    }
+    renderWalls(&currentMap->getHorizontalWalls());
+    renderWalls(&currentMap->getVerticalWalls());
+    
     dxFont->setFontColor(graphicsNS::ORANGE);
     dxFont->print(message,20,(int)messageY);
 	
     graphics->spriteEnd();                  // end drawing sprites
+}
+
+void SpaceTanks::renderWalls(std::vector<Wall*>* walls)
+{
+   int playerX = playerTank.getGridPos().getX();
+   int playerY = playerTank.getGridPos().getY();
+   Wall* curWall = NULL;
+   std::vector<int> visibleWalls;
+   if(currentMap->getLightMode()) {
+      for(int lightX = 0; lightX < currentMap->getLightRadius(); lightX++) {
+         for(int lightY = 0; lightY < currentMap->getLightRadius(); lightY++) {
+            if(playerX - lightX >= 0) {
+               if(playerY - lightY >= 0) {
+                  visibleWalls.push_back(GridVector::get1dPos(playerX - lightX, playerY - lightY));
+               }
+               if(playerY + lightY <= MAX_ROWS) {
+                  visibleWalls.push_back(GridVector::get1dPos(playerX - lightX, playerY + lightY));
+               }
+            }
+            if(playerX + lightX <= MAX_COLS) {
+               if(playerY - lightY >= 0) {
+                  visibleWalls.push_back(GridVector::get1dPos(playerX + lightX, playerY - lightY));
+               }
+               if(playerY + lightY <= MAX_ROWS) {
+                  visibleWalls.push_back(GridVector::get1dPos(playerX + lightX, playerY + lightY));
+               }
+            }
+         }
+      }
+   }
+   for(int pos = 0;  pos < walls->size(); pos++) {
+      Wall* curWall = walls->at(pos);
+      bool visibility = true;
+      if(!curWall->getSolid()) {
+         visibility = false;
+      } else {
+         if(currentMap->getLightMode()) {
+            visibility = false;
+            for(int visiblePos : visibleWalls) {
+               if(pos == visiblePos) {
+                  visibility = true;
+                  break;
+               }
+            }
+         }
+      }
+      curWall->setVisible(visibility);
+      curWall->draw();
+   }
+}
+
+//=============================================================================
+// Process console commands
+//=============================================================================
+void SpaceTanks::consoleCommand()
+{
+   command = console->getCommand();    // get command from console
+   if(command == "")                   // if no command
+      return;
+
+   if(command == "help")              // if "help" command
+   {
+      console->print("Console Commands:");
+      console->print("fps - toggle display of frames per second");
+      return;
+   }
+
+   if(command == "fps") {
+      fpsOn = !fpsOn;                 // toggle display of fps
+      if(fpsOn)
+         console->print("fps On");
+      else
+         console->print("fps Off");
+   }
+   
+   if(command == "lightMode") {
+      if(currentMap) {
+         currentMap->setLightMode(!currentMap->getLightMode());
+         if(currentMap->getLightMode())
+            console->print("lightMode On");
+         else
+            console->print("lightMode Off");
+      }
+   }
+   std::string commandStr = "";
+   int arg1 = 0;
+   if(std::stringstream(command) >> commandStr >> arg1) {
+      if(commandStr == "lightRadius") {
+
+         if(currentMap) {
+            currentMap->setLightRadius(arg1);
+            std::string consoleStr = "light radius set to " + arg1;
+            console->print(consoleStr);
+         }
+      }
+   }
 }
 
 //=============================================================================

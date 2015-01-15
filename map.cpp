@@ -36,7 +36,7 @@ bool Map::initialize(Game* gamePtr)
 	Wall* curWall = NULL;
 
 
-   if(!wallTexture.initialize(gamePtr->getGraphics(), "pictures\\wall4x36.png")) {
+   if(!wallTexture.initialize(gamePtr->getGraphics(), "pictures\\wall4x36_grey.png")) {
       throw(GameError(gameErrorNS::FATAL_ERROR, "Error initializing wall texture"));
    }
 

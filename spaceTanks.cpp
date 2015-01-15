@@ -37,7 +37,7 @@ void SpaceTanks::initialize(HWND hwnd)
     newMap();
 
     // textures
-    if (!tankTexture.initialize(graphics,"pictures\\testSet000.png"))
+    if (!tankTexture.initialize(graphics,"pictures\\cat.png"))
         throw(GameError(gameErrorNS::FATAL_ERROR, "Error initializing tank texture"));
 
 
@@ -151,16 +151,16 @@ void SpaceTanks::collisions()
       char str[200];
       sprintf_s(str, "newX = %d, newY = %d", newX, newY);
       message = str;
-      if(newX == -1 || newX == MAX_COLS || newY == -1 || newY == MAX_ROWS) {
-         mapComplete = true;
-      } else {
-         try {
-            if(!walls->at(GridVector::get1dPos(wallX, wallY))->getSolid()) {
+      try {
+         if(!walls->at(GridVector::get1dPos(wallX, wallY))->getSolid()) {
+            if(newX == -1 || newX == MAX_COLS || newY == -1 || newY == MAX_ROWS) {
+               mapComplete = true;
+            } else {
                playerTank.getGridPos().setPos(newX, newY, &playerTank);
             }
-         } catch(std::out_of_range e) {
-            throw(GameError(gameErrorNS::FATAL_ERROR, str));
          }
+      } catch(std::out_of_range e) {
+         throw(GameError(gameErrorNS::FATAL_ERROR, str));
       }
    }
 
@@ -212,7 +212,7 @@ void SpaceTanks::renderWalls(std::vector<Wall*>* walls)
          }
       }
    }
-   for(int pos = 0;  pos < walls->size(); pos++) {
+   for(unsigned int pos = 0;  pos < walls->size(); pos++) {
       Wall* curWall = walls->at(pos);
       bool visibility = true;
       if(!curWall->getSolid()) {
@@ -257,7 +257,7 @@ void SpaceTanks::consoleCommand()
          console->print("fps Off");
    }
    
-   if(command == "lightMode") {
+   if(command == "lightMode" || command == "lm") {
       if(currentMap) {
          currentMap->setLightMode(!currentMap->getLightMode());
          if(currentMap->getLightMode())
